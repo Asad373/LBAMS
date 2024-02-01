@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "725896896716",
+    "project_id": "lbams-2b55c",
+    "storage_bucket": "lbams-2b55c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:725896896716:android:083ebdf6b73bd75daa6269",
+        "android_client_info": {
+          "package_name": "com.example.lbams"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUSR7hdhlOtoZHIgLXLKK3jGwNAwQd_1s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
