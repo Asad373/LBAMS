@@ -1,6 +1,7 @@
 package com.example.lbams.model;
 
 public class CurrentAttLocation {
+    public  CurrentAttLocation(){}
     public CurrentAttLocation(double lati, double longi) {
         this.lati = lati;
         this.longi = longi;

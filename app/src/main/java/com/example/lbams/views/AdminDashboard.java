@@ -23,8 +23,10 @@ import android.widget.Toast;
 import com.example.lbams.R;
 import com.example.lbams.databinding.ActivityAdminDashboardBinding;
 import com.example.lbams.model.CurrentAttLocation;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 public class AdminDashboard extends BaseActvity {
     ActivityAdminDashboardBinding binding;
@@ -67,8 +69,39 @@ public class AdminDashboard extends BaseActvity {
             }
         });
 
+        binding.textView5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AdminDashboard.this, CustomLocationMarker.class);
+                startActivity(intent);
+            }
+        });
+        getReqCount();
+        accountRequestDetail();
     }
 
+    public void accountRequestDetail(){
+        binding.accountReq.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+    }
+    public void getReqCount(){
+        dbRef.child("AccountRequest").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                long count  = snapshot.getChildrenCount();
+                binding.req.setText("Account Req(" +String.valueOf(count) +")");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,

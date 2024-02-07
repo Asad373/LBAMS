@@ -34,7 +34,7 @@ public class Registration extends BaseActvity {
                 String type = binding.spinnerType.getSelectedItem().toString();
                 String userType= userType(type);
 
-                user = new User(fName, lName, email, "123", userType, "");
+                user = new User(fName, lName, email, "123", userType, "","1");
                 dbRef.child("User").child(email.replace(".", ",")).setValue(user);
             }
         });

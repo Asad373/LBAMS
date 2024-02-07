@@ -152,6 +152,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -194,6 +195,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/accountReq"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -210,13 +212,27 @@
                     android:src="@drawable/search" />
 
                 <TextView
+                    android:id="@+id/req"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:text="View Details" />
+                    android:text="Account Req(10)" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/logout_a"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:text="Logout"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
