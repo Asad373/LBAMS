@@ -15,7 +15,9 @@ import android.view.View;
 
 import com.example.lbams.R;
 import com.example.lbams.databinding.ActivityCustomLocationMarkerBinding;
+import com.example.lbams.model.AttendanceLocationList;
 import com.example.lbams.model.CurrentAttLocation;
+import com.example.lbams.model.MarkAttendanceModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -30,12 +32,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallback {
 
     ActivityCustomLocationMarkerBinding binding;
     GoogleMap map;
     LatLng oAttendanceArea;
     BitmapDescriptor schoolMarker;
+    ArrayList<AttendanceLocationList> list;
+    AttendanceLocationList sLocation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +58,8 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
         schoolMarker = getBitmapDescriptor(this,R.drawable.ic_school);
         binding.saveLoc.setClickable(false);
         binding.saveLoc.setBackgroundColor(Color.GRAY);
+         list  = new ArrayList<>();
+
     }
 
     @Override
@@ -57,13 +69,14 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
     }
 
     private void getLocation() {
-        dbRef.child("Location").addListenerForSingleValueEvent(new ValueEventListener() {
+        dbRef.child("MultiLocation").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                CurrentAttLocation location = snapshot.getValue(CurrentAttLocation.class);
-                if (location != null) {
-                    oAttendanceArea = new LatLng(location.lati, location.longi);
-                    showMap(location.lati, location.longi);
+                for(DataSnapshot snapshot1:snapshot.getChildren()){
+                    AttendanceLocationList model = snapshot1.getValue(AttendanceLocationList.class);
+                    assert model != null;
+                    //Log.d("Dab",model.time);
+                    showMap(model.lati, model.longi);
                 }
             }
 
@@ -81,7 +94,7 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
             map.addMarker(new MarkerOptions().position(location).icon(schoolMarker).title("Welcome to School by local"));
             map.addCircle(new CircleOptions()
                     .center(location)
-                    .radius(30)
+                    .radius(20)
                     .strokeWidth(2)
                     .strokeColor(Color.BLUE)
                     .fillColor(Color.argb(70, 0, 0, 255)));
@@ -97,14 +110,16 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
                 @Override
                 public void onMapClick(@NonNull LatLng latLng) {
                     map.clear();
+                    //list.clear();
                     Marker marker = map.addMarker(new MarkerOptions().position(latLng).icon(schoolMarker).title("New Location"));
                     map.addCircle(new CircleOptions()
                             .center(latLng)
-                            .radius(30)
+                            .radius(20)
                             .strokeWidth(2)
                             .strokeColor(Color.BLUE)
                             .fillColor(Color.argb(70, 0, 0, 255)));
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
+                    //list.add(sLocation);
                     saveMarkedLocation(marker);
                 }
             });
@@ -118,14 +133,17 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
             @Override
             public void onClick(View v) {
                 binding.progress.setVisibility(View.VISIBLE);
-                updateLocationToDB(marker.getPosition().latitude, marker.getPosition().longitude);
+                String ClassCode = binding.distance.getText().toString();
+                AttendanceLocationList loc = new AttendanceLocationList(marker.getPosition().latitude, marker.getPosition().longitude,ClassCode );
+                updateLocationToDB(loc);
             }
         });
     }
 
-    private void updateLocationToDB(double lati, double longi) {
-        CurrentAttLocation location = new CurrentAttLocation(lati, longi);
-        dbRef.child("Location").setValue(location, new DatabaseReference.CompletionListener() {
+    private void updateLocationToDB(AttendanceLocationList loc) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("MultiLocation", list);
+        dbRef.child("MultiLocation").child(getRandomId()).setValue(loc, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                 binding.progress.setVisibility(View.GONE);
@@ -146,5 +164,12 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
 
         // Create a BitmapDescriptor from the Bitmap
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    private  String getRandomId() {
+        Date currentTime = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");
+        String formattedTime = sdf.format(currentTime);
+        return formattedTime;
     }
 }
