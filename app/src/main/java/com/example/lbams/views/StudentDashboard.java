@@ -245,7 +245,12 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
     public void middleware(int index, ArrayList<AttendanceLocationList> list){
         availableInArea = true;
         if(index == 0){
-            CheckIN(list.get(0).ClassCode);
+            if(savedIndex > index){
+                UIUpdate(index, savedIndex,list);
+            }else{
+                CheckIN(list.get(0).ClassCode);
+            }
+
             savedIndex = index;
         }else{
             if(index != savedIndex){
@@ -267,13 +272,15 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
         binding.time.setText(getTime());
         binding.attenStatus.setTextColor(Color.RED);
         //
-        MarkAttendanceModel model  = new MarkAttendanceModel("","1",formattedDate,getTime(), list.get(savedIndex).ClassCode);
-        dbRef.child("Attendance").child(email.replace(".",",")).child(getRandomId()).setValue(model, new DatabaseReference.CompletionListener() {
+        String id = getRandomId();
+        MarkAttendanceModel model  = new MarkAttendanceModel(id,"","1",formattedDate,getTime(), list.get(savedIndex).ClassCode, email, "0");
+        dbRef.child("Attendance").child(list.get(savedIndex).ClassCode).child(email.replace(".",",")).child(id).setValue(model, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                 //Toast.makeText(StudentDashboard.this, "CheckOut Saved", Toast.LENGTH_SHORT).show();
-                MarkAttendanceModel model  = new MarkAttendanceModel("1","",formattedDate,getTime(), list.get(CurrIndex).ClassCode);
-                dbRef.child("Attendance").child(email.replace(".",",")).child(getRandomId()).setValue(model, new DatabaseReference.CompletionListener() {
+                String id = getRandomId();
+                MarkAttendanceModel model  = new MarkAttendanceModel(id,"1","",formattedDate,getTime(), list.get(CurrIndex).ClassCode, email, "0");
+                dbRef.child("Attendance").child(list.get(CurrIndex).ClassCode).child(email.replace(".",",")).child(id).setValue(model, new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
                         binding.attenStatus.setText("Checked In");
@@ -295,9 +302,9 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
         binding.Date.setText(formattedDate);
         binding.time.setText(getTime());
         binding.attenStatus.setTextColor(Color.RED);
-
-        MarkAttendanceModel model  = new MarkAttendanceModel("","1",formattedDate,getTime(), "none");
-        dbRef.child("Attendance").child(email.replace(".",",")).child(getRandomId()).setValue(model);
+        String id = getRandomId();
+        MarkAttendanceModel model  = new MarkAttendanceModel(id,"","1",formattedDate,getTime(), "none", email, "0");
+        dbRef.child("Attendance").child("none").child(email.replace(".",",")).child(getRandomId()).setValue(model);
     }
 
     public void CheckIN(String code){
@@ -309,9 +316,9 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
         binding.Date.setText(formattedDate);
         binding.time.setText(getTime());
         binding.attenStatus.setTextColor(Color.GREEN);
-
-        MarkAttendanceModel model  = new MarkAttendanceModel("1","",formattedDate,getTime(), code);
-        dbRef.child("Attendance").child(email.replace(".",",")).child(getRandomId()).setValue(model);
+        String id = getRandomId();
+        MarkAttendanceModel model  = new MarkAttendanceModel(id,"1","",formattedDate,getTime(), code, email, "0");
+        dbRef.child("Attendance").child(code).child(email.replace(".",",")).child(id).setValue(model);
     }
     public void askLocationPermission(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -367,48 +374,6 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
                     .strokeColor(Color.RED)
                     .fillColor(Color.argb(70, 255, 0, 0)));
             //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(attenArea, 19));
-        }
-
-    }
-
-    public void saveAttendance(float distance, boolean CheckedIn) {
-        Date currentDate = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-        String formattedDate = dateFormat.format(currentDate);
-        if (CheckedIn) {
-            if(!isCheckedInSave){
-                binding.attenStatus.setText("Checked In");
-                binding.Date.setText(formattedDate);
-                binding.time.setText(getTime());
-                binding.attenStatus.setTextColor(Color.GREEN);
-                isCheckedInSave = true;
-                isCheckedOutSave = false;
-                addRecordToDb(true, formattedDate, getTime());
-
-            }
-
-        } else {
-            if(!isCheckedOutSave){
-                binding.attenStatus.setText("Checked Out");
-                binding.Date.setText(formattedDate);
-                binding.time.setText(getTime());
-                binding.attenStatus.setTextColor(Color.RED);
-                isCheckedOutSave = true;
-                isCheckedInSave = false;
-                addRecordToDb(false, formattedDate, getTime());
-            }
-
-        }
-
-    }
-
-    void addRecordToDb(boolean checkIn, String date, String time){
-        if(checkIn){
-            MarkAttendanceModel model = new MarkAttendanceModel("1","",date, time, "1");
-            dbRef.child("Attendance").child(email.replace(".", ",")).child(getRandomId()).setValue(model);
-        }else{
-            MarkAttendanceModel model = new MarkAttendanceModel("","1",date, time, "1");
-            dbRef.child("Attendance").child(email.replace(".", ",")).child(getRandomId()).setValue(model);
         }
 
     }

@@ -98,6 +98,8 @@ public class Login extends BaseActvity {
           }else{
               if(user.Role.equals("t")){
                   Intent intent  = new Intent(Login.this, TeacherDashboard.class);
+                  intent.putExtra("email",email);
+                  intent.putExtra("code", user.CourseCode);
                   startActivity(intent);
                   finish();
               }else{

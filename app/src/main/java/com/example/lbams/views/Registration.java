@@ -32,9 +32,11 @@ public class Registration extends BaseActvity {
                 String lName = binding.editTextLastName.getText().toString();
                 String email = binding.editTextEmail.getText().toString();
                 String type = binding.spinnerType.getSelectedItem().toString();
+                String code = binding.code.getText().toString();
+                String pass  = binding.editTextPassword.getText().toString();
                 String userType= userType(type);
 
-                user = new User(fName, lName, email, "123", userType, "","1");
+                user = new User(fName, lName, email, pass, userType, code,"1");
                 dbRef.child("User").child(email.replace(".", ",")).setValue(user);
             }
         });

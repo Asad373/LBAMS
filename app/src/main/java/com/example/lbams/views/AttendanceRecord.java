@@ -38,12 +38,19 @@ public class AttendanceRecord extends BaseActvity {
         record = new ArrayList<>();
         Intent intent = getIntent();
         email = intent.getStringExtra("email");
-        getData();
+        binding.button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String code = binding.editText5.getText().toString();
+                getData(code);
+            }
+        });
+
 
     }
-    public void getData(){
+    public void getData(String code){
         binding.progress.setVisibility(View.VISIBLE);
-        dbRef.child("Attendance").child(email.replace(".",",")).addValueEventListener(new ValueEventListener() {
+        dbRef.child("Attendance").child(code).child(email.replace(".",",")).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                for(DataSnapshot snapshot1:snapshot.getChildren()){

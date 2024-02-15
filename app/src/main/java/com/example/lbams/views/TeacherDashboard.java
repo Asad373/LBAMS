@@ -2,15 +2,34 @@ package com.example.lbams.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.example.lbams.R;
+import com.example.lbams.databinding.ActivityTeacherDashboardBinding;
 
 public class TeacherDashboard extends AppCompatActivity {
 
+    ActivityTeacherDashboardBinding binding;
+    String code;
+    String email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_teacher_dashboard);
+        binding = ActivityTeacherDashboardBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        Intent intent = getIntent();
+        email = intent.getStringExtra("email");
+        code = intent.getStringExtra("code");
+        binding.location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentAtt = new Intent(TeacherDashboard.this, ApproveAttendence.class);
+                intentAtt.putExtra("code", code);
+                startActivity(intentAtt);
+            }
+        });
     }
 }
