@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    tools:context=".views.AddSchedule">
+
+    <TextView
+        android:id="@+id/textViewHeading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Schedule"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="16dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+
+        <Spinner
+            android:id="@+id/spinnerClass"
+            android:background="@drawable/edit_text_background"
+            android:layout_width="match_parent"
+            android:padding="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:entries="@array/days"
+            android:hint="Type">
+        </Spinner>
+
+        <EditText
+            android:id="@+id/className"
+            android:background="@drawable/edit_text_background"
+            android:layout_width="match_parent"
+            android:padding="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:entries="@array/days"
+            android:hint="Add class Name e.g Math">
+        </EditText>
+
+        <Spinner
+            android:id="@+id/spinnerDay"
+            android:background="@drawable/edit_text_background"
+            android:layout_width="match_parent"
+            android:padding="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:entries="@array/days"
+            android:hint="Type">
+        </Spinner>
+
+        <!-- activity_main.xml -->
+        <!-- activity_main.xml -->
+        <RelativeLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <EditText
+                android:id="@+id/editTextDatePicker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_text_background"
+                android:clickable="true"
+                android:padding="20dp"
+                android:focusable="false"
+                android:hint="Select Date"
+                 />
+
+            <ImageView
+                android:id="@+id/select_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_calendar" />
+        </RelativeLayout>
+
+
+
+        <Spinner
+            android:id="@+id/SpinnerTime"
+            android:background="@drawable/edit_text_background"
+            android:layout_width="match_parent"
+            android:padding="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:entries="@array/types"
+            android:hint="Type">
+        </Spinner>
+
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/progress"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="735dp"
+            android:visibility="gone">
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_fileName="animation.json"
+                app:lottie_loop="true" />
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

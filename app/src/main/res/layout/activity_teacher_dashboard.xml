@@ -189,7 +189,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:text="Add Course" />
+                    android:text="View Schedule" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -222,7 +222,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/logout_a"
+        android:id="@+id/Logout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"

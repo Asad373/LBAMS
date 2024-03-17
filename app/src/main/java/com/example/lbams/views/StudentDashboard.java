@@ -29,6 +29,7 @@ import com.example.lbams.databinding.ActivityStudentDashboardBinding;
 import com.example.lbams.model.AttendanceLocationList;
 import com.example.lbams.model.CurrentAttLocation;
 import com.example.lbams.model.MarkAttendanceModel;
+import com.example.lbams.model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -66,6 +67,7 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
     boolean availableInArea;
     int savedIndex;
     String email;
+    CurrentAttLocation UniArea;
     ArrayList<AttendanceLocationList> mlist;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +87,19 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
         mapFragment.getMapAsync(this);
         mMapHandler = new Handler();
         mlist = new ArrayList<>();
+        UniArea = new CurrentAttLocation();
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         gotoDetail();
         signOut();
+        binding.viewSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StudentDashboard.this, AttendanceRecord.class);
+                intent.putExtra("email", email);
+                intent.putExtra("sch", "1");
+                startActivity(intent);
+            }
+        });
     }
     public void signOut(){
       binding.logout.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +117,7 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
             public void onClick(View v) {
               Intent intent = new Intent(StudentDashboard.this, AttendanceRecord.class);
               intent.putExtra("email", email);
+              intent.putExtra("sch", "0");
               startActivity(intent);
             }
         });
@@ -155,8 +168,33 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
     public void onMapReady(@NonNull GoogleMap map) {
         googleMap = map;
         getLocation();
+        getUniversityArea();
     }
 
+    private void getUniversityArea(){
+        dbRef.child("Location").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                UniArea = snapshot.getValue(CurrentAttLocation.class);
+                showUniArea();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    public void showUniArea(){
+            LatLng latLng = new LatLng(UniArea.lati, UniArea.longi);
+            googleMap.addMarker(new MarkerOptions().position(latLng).icon(schoolMarker).title("Welcome to School"));
+            googleMap.addCircle(new CircleOptions()
+                    .center(latLng)
+                    .radius(100)
+                    .strokeWidth(2)
+                    .strokeColor(Color.BLUE)
+                    .fillColor(Color.argb(70, 0, 255, 0)));
+    }
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
@@ -216,6 +254,7 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
 
         if(googleMap != null){
             googleMap.clear();
+            showUniArea();
             LatLng latLng = new LatLng(currentLoc.getLatitude(), currentLoc.getLongitude());
             googleMap.addMarker(new MarkerOptions().position(latLng).icon(studentMarker).title("you are here"));
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));

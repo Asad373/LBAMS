@@ -44,14 +44,18 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
     GoogleMap map;
     LatLng oAttendanceArea;
     BitmapDescriptor schoolMarker;
+    ArrayList<String> classCodeList;
     ArrayList<AttendanceLocationList> list;
     AttendanceLocationList sLocation;
+    CurrentAttLocation UniArea;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCustomLocationMarkerBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        CurrentAttLocation UniArea = new CurrentAttLocation();
         binding.map.onCreate(savedInstanceState);
         binding.map.getMapAsync(this);
 
@@ -66,16 +70,45 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
     public void onMapReady(@NonNull GoogleMap googleMap) {
            map = googleMap;
            getLocation();
+          getUniversityArea();
+    }
+
+    private void getUniversityArea(){
+        dbRef.child("Location").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                UniArea = snapshot.getValue(CurrentAttLocation.class);
+                showUniArea();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void showUniArea(){
+        LatLng latLng = new LatLng(UniArea.lati, UniArea.longi);
+        map.addMarker(new MarkerOptions().position(latLng).icon(schoolMarker).title("Welcome to School"));
+        map.addCircle(new CircleOptions()
+                .center(latLng)
+                .radius(100)
+                .strokeWidth(2)
+                .strokeColor(Color.BLUE)
+                .fillColor(Color.argb(70, 0, 255, 0)));
     }
 
     private void getLocation() {
         dbRef.child("MultiLocation").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                classCodeList = new ArrayList<>();
                 for(DataSnapshot snapshot1:snapshot.getChildren()){
                     AttendanceLocationList model = snapshot1.getValue(AttendanceLocationList.class);
                     assert model != null;
                     //Log.d("Dab",model.time);
+                    classCodeList.add(model.ClassCode);
                     showMap(model.lati, model.longi);
                 }
             }
@@ -110,6 +143,7 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
                 @Override
                 public void onMapClick(@NonNull LatLng latLng) {
                     map.clear();
+                    showUniArea();
                     //list.clear();
                     Marker marker = map.addMarker(new MarkerOptions().position(latLng).icon(schoolMarker).title("New Location"));
                     map.addCircle(new CircleOptions()
@@ -141,15 +175,28 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
     }
 
     private void updateLocationToDB(AttendanceLocationList loc) {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("MultiLocation", list);
-        dbRef.child("MultiLocation").child(getRandomId()).setValue(loc, new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-                binding.progress.setVisibility(View.GONE);
-                showCustomDialog("Location Marked Successfully");
+        boolean isLocationExisted = false;
+        for (String obj:classCodeList){
+            if(obj.equals(loc.ClassCode)){
+                isLocationExisted   = true;
+                break;
             }
-        });
+        }
+        if(!isLocationExisted){
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("MultiLocation", list);
+            dbRef.child("MultiLocation").child(getRandomId()).setValue(loc, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                    binding.progress.setVisibility(View.GONE);
+                    showCustomDialog("Location Marked Successfully");
+                }
+            });
+        }else{
+            binding.progress.setVisibility(View.GONE);
+            showCustomDialog("Class code already existed!");
+        }
+
     }
     public  BitmapDescriptor getBitmapDescriptor(Context context, int vectorDrawableResourceId) {
         // Get the Drawable from the vector resource

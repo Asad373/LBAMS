@@ -32,6 +32,7 @@ public class AdminDashboard extends BaseActvity {
     ActivityAdminDashboardBinding binding;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     private LocationManager locationManager;
+    CurrentAttLocation UniArea;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class AdminDashboard extends BaseActvity {
         binding = ActivityAdminDashboardBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        UniArea = new CurrentAttLocation();
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -74,6 +76,22 @@ public class AdminDashboard extends BaseActvity {
             public void onClick(View v) {
                 Intent intent = new Intent(AdminDashboard.this, CustomLocationMarker.class);
                 startActivity(intent);
+            }
+        });
+        binding.lost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AdminDashboard.this, AddSchedule.class);
+                startActivity(intent);
+            }
+        });
+
+        binding.Logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent1 = new Intent(AdminDashboard.this, Login.class);
+                startActivity(intent1);
+                finish();
             }
         });
         getReqCount();
