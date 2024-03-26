@@ -150,6 +150,7 @@ public class AddSchedule extends BaseActvity {
 
        //
 
+
         for (ScheduleModel model : dataList){
             if(model.Date.equals(Date) && model.classCode.equals(ClassCode) && model.Time.equals(time)){
                 isScheduleExisted = true;
