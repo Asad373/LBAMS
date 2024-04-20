@@ -44,12 +44,18 @@ public class ApproveAttendence extends BaseActvity {
        dbRef.child("Attendance").child(code).addListenerForSingleValueEvent(new ValueEventListener() {
            @Override
            public void onDataChange(@NonNull DataSnapshot snapshot) {
+               if(snapshot.getValue() != null){
                ArrayList <String> emails = new ArrayList<>();
                for (DataSnapshot emailSnapshot : snapshot.getChildren()) {
                    String email = emailSnapshot.getKey();
                    emails.add(email);
                }
                getRecord(emails, code);
+               }else{
+                   binding.progress.setVisibility(View.GONE);
+                   binding.recyclerView.setVisibility(View.GONE);
+                   binding.notFound.setVisibility(View.VISIBLE);
+               }
            }
 
            @Override

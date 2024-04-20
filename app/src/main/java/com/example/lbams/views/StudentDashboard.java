@@ -69,6 +69,7 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
     String email;
     CurrentAttLocation UniArea;
     ArrayList<AttendanceLocationList> mlist;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -215,8 +216,22 @@ public class StudentDashboard extends BaseActvity implements OnMapReadyCallback 
             @Override
             public void onLocationChanged(@NonNull Location location) {
 
-                //float[] distanceCovered  = new float[1];
-                AttendanceLogic(mlist, location);
+                float[] distanceCovered  = new float[1];
+                Location.distanceBetween(UniArea.lati, UniArea.longi, location.getLatitude(), location.getLongitude(), distanceCovered);
+                if(distanceCovered[0] < 100){
+
+                    AttendanceLogic(mlist, location);
+                }else{
+                    Date currentDate = new Date();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                    String formattedDate = dateFormat.format(currentDate);
+
+                    binding.attenStatus.setText("You are out of university area!");
+                    binding.Date.setText(formattedDate);
+                    binding.time.setText(getTime());
+                    binding.attenStatus.setTextColor(Color.GREEN);
+                }
+
 
                 /*Location.distanceBetween(oAttendanceArea.latitude, oAttendanceArea.longitude, location.getLatitude(), location.getLongitude(), distanceCovered);
                 Log.d("Distance", String.valueOf(distanceCovered[0]));

@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 
@@ -71,6 +72,7 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
            map = googleMap;
            getLocation();
           getUniversityArea();
+          changeLocation();
     }
 
     private void getUniversityArea(){
@@ -97,6 +99,7 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
                 .strokeWidth(2)
                 .strokeColor(Color.BLUE)
                 .fillColor(Color.argb(70, 0, 255, 0)));
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
     }
 
     private void getLocation() {
@@ -106,10 +109,15 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
                 classCodeList = new ArrayList<>();
                 for(DataSnapshot snapshot1:snapshot.getChildren()){
                     AttendanceLocationList model = snapshot1.getValue(AttendanceLocationList.class);
-                    assert model != null;
-                    //Log.d("Dab",model.time);
-                    classCodeList.add(model.ClassCode);
-                    showMap(model.lati, model.longi);
+                    /*assert model != null;
+                    //Log.d("Dab",model.time);*/
+                    if(model != null){
+                        classCodeList.add(model.ClassCode);
+                        showMap(model.lati, model.longi);
+                    }else{
+                        changeLocation();
+                    }
+
                 }
             }
 
@@ -145,6 +153,7 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
                     map.clear();
                     showUniArea();
                     //list.clear();
+
                     Marker marker = map.addMarker(new MarkerOptions().position(latLng).icon(schoolMarker).title("New Location"));
                     map.addCircle(new CircleOptions()
                             .center(latLng)
@@ -154,7 +163,10 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
                             .fillColor(Color.argb(70, 0, 0, 255)));
                     map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 19));
                     //list.add(sLocation);
-                    saveMarkedLocation(marker);
+
+                        saveMarkedLocation(marker);
+
+
                 }
             });
         }
@@ -168,8 +180,20 @@ public class CustomLocationMarker extends BaseActvity implements OnMapReadyCallb
             public void onClick(View v) {
                 binding.progress.setVisibility(View.VISIBLE);
                 String ClassCode = binding.distance.getText().toString();
-                AttendanceLocationList loc = new AttendanceLocationList(marker.getPosition().latitude, marker.getPosition().longitude,ClassCode );
-                updateLocationToDB(loc);
+                if(ClassCode.equals("")){
+                    binding.progress.setVisibility(View.GONE);
+                    showCustomDialog("Please add class code!");
+                }else {
+                    float[] distanceCovered  = new float[1];
+                    Location.distanceBetween(UniArea.lati, UniArea.longi, marker.getPosition().latitude, marker.getPosition().longitude, distanceCovered);
+                    if(distanceCovered[0] < 100){
+                    AttendanceLocationList loc = new AttendanceLocationList(marker.getPosition().latitude, marker.getPosition().longitude, ClassCode);
+                    updateLocationToDB(loc);
+                    }else{
+                        binding.progress.setVisibility(View.GONE);
+                        showCustomDialog("Marked Location not within University Area!");
+                    }
+                }
             }
         });
     }
