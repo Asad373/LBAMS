@@ -85,7 +85,12 @@ public class AdminDashboard extends BaseActvity {
                 startActivity(intent);
             }
         });
-
+        binding.account.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(AdminDashboard.this, "I'm Linker", Toast.LENGTH_SHORT).show();
+            }
+        });
         binding.Logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,10 +104,11 @@ public class AdminDashboard extends BaseActvity {
     }
 
     public void accountRequestDetail(){
-        binding.accountReq.setOnClickListener(new View.OnClickListener() {
+        binding.account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+               Intent intent = new Intent(AdminDashboard.this, RequestedAccount.class);
+               startActivity(intent);
             }
         });
     }
